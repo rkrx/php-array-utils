@@ -20,10 +20,5 @@
 			"src/functions.php",
 			"src/recursive.php"
 		]
-	},
-	"autoload-dev": {
-		"psr-4": {
-			"Kir\\Http\\Routing\\": ["src/", "tests/"]
-		}
 	}
 }

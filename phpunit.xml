@@ -13,7 +13,8 @@
 >
 	<testsuites>
 		<testsuite name="array-functions">
-			<file>tests/functions.php</file>
+			<file>tests/AllTest.php</file>
+			<file>tests/DiffRecursiveTest.php</file>
 		</testsuite>
 	</testsuites>
 </phpunit>

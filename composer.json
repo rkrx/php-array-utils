@@ -17,8 +17,17 @@
 	},
 	"autoload": {
 		"files": [
-			"src/functions.php",
-			"src/recursive.php"
+			"src/diff/functions.php",
+			"src/diff/recursive/functions.php",
+			"src/intersect/functions.php",
+			"src/filter/functions.php",
+			"src/map/functions.php",
+			"src/groupBy/functions.php",
+			"src/has/functions.php",
+			"src/get/functions.php",
+			"src/set/functions.php",
+			"src/remove/functions.php",
+			"src/functions.php"
 		]
 	}
 }

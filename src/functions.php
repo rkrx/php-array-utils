@@ -138,7 +138,7 @@ function mapKeysAndValues($array, $callable) {
  * @return array
  */
 function mapFunc($array, $callable, array $params = array(), $paramPos = 0) {
-	return map($array, function (array $value) use ($callable, $params, $paramPos) {
+	return map($array, function ($value) use ($callable, $params, $paramPos) {
 		$p = $params;
 		array_splice($p, $paramPos, 0, array($value));
 		return call_user_func_array($callable, $p);

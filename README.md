@@ -57,3 +57,21 @@ arr\mapKeysAndValues($input, function (&$key, $value) { list($value, $key) = arr
 arr\mapFunc([[255, 128, 0], [128, 255, 0]], 'vsprintf', array('#%02X%02X%02X'), 1);
 # [0 => #FF8000, 1 => #80FF00]
 ```
+
+# FAQ
+
+> Hey, all the cool kids use OOP. Isn't this library pointing in the wrong direction?
+
+It depends either on the situation or the extent in which an array is used. In PHP, arrays are often meat in different situations. At least, $_-variables are arrays. You can immediately wrap an Array into an ArrayObject, but then you can't use many of the features built into PHP directly. So I think I have to explain the advantages and disadvantages of each approach:
+
+Advantage of array-functions:
+
+* You don't have to make an Object out of every array you wan't to apply functionality on.
+* You can still use php's built in functions on Arrays without the need to conversion like array_merge().
+* You can add as many functions by yourself as you wish. You could so the same with an ArrayObject-descendant, but then you have a god-object with tens or hundreds of methods (Closure-bindung?).
+* You can always use the array-typehint and still use the extensions of this library directly.
+
+Disadvantages of array-functions:
+
+* Of you pass an array as a parameter to a function/method, the whole array gets copied.
+* You can utilize an inner state that can help to track changes or whatever.

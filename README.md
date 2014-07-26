@@ -66,12 +66,12 @@ It depends either on the situation or the extent in which an array is used. In P
 
 Advantage of array-functions:
 
-* You don't have to make an Object out of every array you wan't to apply functionality on.
-* You can still use php's built in functions on Arrays without the need to conversion like array_merge().
-* You can add as many functions by yourself as you wish. You could so the same with an ArrayObject-descendant, but then you have a god-object with tens or hundreds of methods (Closure-bindung?).
-* You can always use the array-typehint and still use the extensions of this library directly.
+* You don't have to make an object out of every array you wan't to apply certain functionality on.
+* You can still use php's built in functions like array_merge() on arrays without the need for conversion.
+* You can add as many functions by yourself as you wish. You could so the same with an ArrayObject-descendant, but then you end up with a god-object with tens or hundreds of methods (Closure-bindung?).
+* You can always use the array-typehint and still utilize the extensions of this library directly.
 
 Disadvantages of array-functions:
 
-* Of you pass an array as a parameter to a function/method, the whole array gets copied.
+* Everytime you pass an array as a parameter to a function/method, the whole array gets copied.
 * You can utilize an inner state that can help to track changes or whatever.

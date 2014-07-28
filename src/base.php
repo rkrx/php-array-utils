@@ -1,11 +1,8 @@
 <?php
 /**
- * @return \arr\ArrayBasics
+ * @param array $array
+ * @return \arr\ArrayObj
  */
-function arr() {
-	static $arr = null;
-	if($arr === null) {
-		$arr = new \arr\ArrayBasics();
-	}
-	return $arr;
+function arr(array $array) {
+	return new \arr\ArrayObj($array);
 }

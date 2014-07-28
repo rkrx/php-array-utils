@@ -3,68 +3,76 @@ namespace arr;
 
 use ArrayAccess;
 
-class ArrayBasics {
+class ArrayObj {
+	/**
+	 * @var array
+	 */
+	private $array;
+
 	/**
 	 * @param array $array
+	 */
+	public function __construct(array $array) {
+		$this->array = $array;
+	}
+
+	/**
 	 * @param string $concatenator
 	 * @return string
 	 */
-	public function join($array, $concatenator = '') {
-		return \join($concatenator, $array);
+	public function join($concatenator = '') {
+		return join($concatenator, $this->array);
 	}
 
 	/**
-	 * @param array $array
 	 * @param array $values
-	 * @return array
+	 * @return ArrayObj
 	 */
-	public function intersect($array, $values) {
-		return array_intersect($array, $values);
+	public function intersect($values) {
+		return arr(array_intersect($this->array, $values));
 	}
 
 	/**
-	 * @param array $array
 	 * @param array $keys
-	 * @return array
+	 * @return ArrayObj
 	 */
-	public function intersectKeys($array, $keys) {
-		$aKeys = array_keys($array);
+	public function intersectKeys($keys) {
+		$aKeys = array_keys($this->array);
 		$bKeys = array_values($keys);
 		$result = array_intersect($aKeys, $bKeys);
 		$cKeys = array_combine($result, $result);
-		return array_intersect_key($array, $cKeys);
+		$res = array_intersect_key($this->array, $cKeys);
+		return arr($res);
 	}
 
 	/**
-	 * @param array $array
 	 * @param array $values
-	 * @return array
+	 * @return ArrayObj
 	 */
-	public function diff($array, $values) {
-		return array_diff($array, $values);
+	public function diff($values) {
+		return arr(array_diff($this->array, $values));
 	}
 
 	/**
-	 * @param array $array
 	 * @param array $keys
-	 * @return array
+	 * @return ArrayObj
 	 */
-	public function diffKeys($array, $keys) {
-		$aKeys = array_keys($array);
+	public function diffKeys($keys) {
+		$aKeys = array_keys($this->array);
 		$bKeys = array_values($keys);
 		$result = array_diff($aKeys, $bKeys);
 		$cKeys = array_combine($result, $result);
-		return array_intersect_key($array, $cKeys);
+		return arr(array_intersect_key($this->array, $cKeys));
 	}
 
 	/**
-	 * @param array $arrayA
 	 * @param array $arrayB
-	 * @return array
+	 * @return ArrayObj
 	 */
-	public function diffAssocRecursive($arrayA, $arrayB) {
-		$a = $this->filter($arrayA, function ($value) { return !is_array($value); });
-		$b = $this->filter($arrayB, function ($value) { return !is_array($value); });
+	public function diffAssocRecursive($arrayB) {
+		$arrayA = $this->array;
+		$a = arr($arrayA)->filter(function ($value) { return !is_array($value); })->asArray();
+		$b = arr($arrayB)->filter(function ($value) { return !is_array($value); })->asArray();
 
 		// Get all entries from $arrayX not showing up in $x
 		$aA = array_diff_key($arrayA, $a);
@@ -82,100 +90,104 @@ class ArrayBasics {
 		$diff3 = array();
 		foreach($diffSub as $key => $subA) {
 			$subB = $arrayB[$key];
-			$diff = $this->diffAssocRecursive($subA, $subB);
+			$diff = arr($subA)->diffAssocRecursive($subB)->asArray();
 			if(count($diff) > 0) {
 				$diff3[$key] = $diff;
 			}
 		}
 
 		// Merge all differences
-		return array_merge($diff1, $diff2, $diff3);
+		return arr(array_merge($diff1, $diff2, $diff3));
 	}
 
 	/**
-	 * @param array $array
 	 * @param null|callable $callable
-	 * @return array
+	 * @return ArrayObj
 	 */
-	public function filter($array, $callable = null) {
+	public function filter($callable = null) {
+		$array = $this->array;
 		if($callable === null) {
-			return array_filter($array);
+			return arr(array_filter($array));
 		}
-		return array_filter($array, $callable);
+		return arr(array_filter($array, $callable));
 	}
 
 	/**
-	 * @param array $array
 	 * @param null|callable $callable
-	 * @return array
+	 * @return ArrayObj
 	 */
-	public function filterKeys($array, $callable = null) {
+	public function filterKeys($callable = null) {
+		$array = $this->array;
 		$keys = array_keys($array);
-		$keys = $this->filter($keys, $callable);
-		return $this->intersectKeys($array, $keys);
+		if($callable !== null) {
+			$keys = array_filter($keys, $callable);
+		} else {
+			$keys = array_filter($keys);
+		}
+		return arr($array)->intersectKeys($keys);
 	}
 
 	/**
-	 * @param array $array
 	 * @param callable $callable
-	 * @return array
+	 * @return ArrayObj
 	 */
-	public function filterKeysAndValues($array, $callable) {
+	public function filterKeysAndValues($callable) {
+		$array = $this->array;
 		$result = array();
 		foreach($array as $key => $value) {
 			if(call_user_func($callable, $key, $value)) {
 				$result[$key] = $value;
 			}
 		}
-		return $result;
+		return arr($result);
 	}
 
 	/**
-	 * @param array $array
 	 * @param callable $callable
-	 * @return array
+	 * @return ArrayObj
 	 */
-	public function map($array, $callable) {
-		return array_map($callable, $array);
+	public function map($callable) {
+		$array = $this->array;
+		return arr(array_map($callable, $array));
 	}
 
 	/**
-	 * @param array $array
 	 * @param callable $callable
-	 * @return array
+	 * @return ArrayObj
 	 */
-	public function mapKeys($array, $callable) {
+	public function mapKeys($callable) {
+		$array = $this->array;
 		$result = array();
 		foreach($array as $key => $value) {
 			$key = call_user_func($callable, $key);
 			$result[$key] = $value;
 		}
-		return $result;
+		return arr($result);
 	}
 
 	/**
-	 * @param array $array
 	 * @param callable $callable
-	 * @return array
+	 * @return ArrayObj
 	 */
-	public function mapKeysAndValues($array, $callable) {
+	public function mapKeysAndValues($callable) {
+		$array = $this->array;
 		$result = array();
 		foreach($array as $key => $value) {
 			$value = call_user_func_array($callable, array(&$key, $value));
 			$result[(string) $key] = $value;
 		}
-		return $result;
+		return arr($result);
 	}
 
 	/**
-	 * @param array $array
 	 * @param callable $callable
 	 * @param array $params
 	 * @param int $paramPos
-	 * @return array
+	 * @return ArrayObj
 	 */
-	public function mapFunc($array, $callable, array $params = array(), $paramPos = 0) {
-		return $this->map($array, function ($value) use ($callable, $params, $paramPos) {
+	public function mapFunc($callable, array $params = array(), $paramPos = 0) {
+		$array = $this->array;
+		return arr($array)->map(function ($value) use ($callable, $params, $paramPos) {
 			$p = $params;
 			array_splice($p, $paramPos, 0, array($value));
 			return call_user_func_array($callable, $p);
@@ -183,11 +195,11 @@ class ArrayBasics {
 	}
 
 	/**
-	 * @param array $array
 	 * @param string $key
-	 * @return array
+	 * @return ArrayObj
 	 */
-	public function has($array, $key) {
+	public function has($key) {
+		$array = $this->array;
 		if(!is_array($array) && !($array instanceof \ArrayAccess)) {
 			return false;
 		}
@@ -195,55 +207,54 @@ class ArrayBasics {
 	}
 
 	/**
-	 * @param array $array
 	 * @param string $key
 	 * @param mixed $default
-	 * @return array
+	 * @return ArrayObj
 	 */
-	public function get($array, $key, $default = null) {
-		if($this->has($array, $key)) {
+	public function get($key, $default = null) {
+		$array = $this->array;
+		if(arr($array)->has($key)) {
 			return $array[$key];
 		}
 		return $default;
 	}
 
 	/**
-	 * @param array $array
 	 * @param string $key
 	 * @param $value
-	 * @return array
+	 * @return ArrayObj
 	 */
-	public function set($array, $key, $value) {
+	public function set($key, $value) {
 		$array[$key] = $value;
 		return $array;
 	}
 
 
 	/**
-	 * @param array $array
 	 * @param string $key
-	 * @return array
+	 * @return ArrayObj
 	 */
-	public function remove($array, $key) {
-		if($this->has($array, $key)) {
+	public function remove($key) {
+		$array = $this->array;
+		if(arr($array)->has($key)) {
 			unset($array[$key]);
 		}
 		return $array;
 	}
 
 	/**
-	 * @param array|ArrayAccess $array
 	 * @param array $path
 	 * @param callable $callback
-	 * @return array
+	 * @return ArrayObj
 	 */
-	public function recursiveGroupBy($array, array $path, $callback = null) {
+	public function recursiveGroupBy(array $path, $callback = null) {
+		$array = $this->array;
 		$result = array();
 		foreach($array as $value) {
-			if(!is_array($value) || !$this->recursiveHas($value, $path)) {
+			if(!is_array($value) || !$this->_recursiveHas($value, $path)) {
 				continue;
 			}
-			$columnValue = $this->recursiveGet($value, $path);
+			$columnValue = (string) $this->_recursiveGet($value, $path, null);
 			if(!array_key_exists($columnValue, $result)) {
 				$result[$columnValue] = array();
 			}
@@ -256,11 +267,57 @@ class ArrayBasics {
 	}
 
 	/**
-	 * @param array|ArrayAccess $array
 	 * @param string[] $path
 	 * @return bool
 	 */
-	public function recursiveHas($array, array $path) {
+	public function recursiveHas(array $path) {
+		return $this->_recursiveHas($this->array, $path);
+	}
+
+	/**
+	 * @param string[] $path
+	 * @param mixed $default
+	 * @return mixed
+	 */
+	public function recursiveGet(array $path, $default = null) {
+		return $this->_recursiveGet($this->array, $path, $default);
+	}
+
+	/**
+	 * @param string[] $path
+	 * @param mixed $value
+	 * @return ArrayObj
+	 */
+	public function recursiveSet(array $path, $value) {
+		$this->_recursiveSet($this->array, $path, $value);
+		return $this;
+	}
+
+	/**
+	 * Run into each level of recursion until the last key was found, or until a key was missing at any level.
+	 * If the last key was found, it gets removed by unset()
+	 *
+	 * @param string[] $path
+	 * @return ArrayObj
+	 */
+	public function recursiveRemove(array $path) {
+		$this->_recursiveRemove($this->array, $path);
+		return $this;
+	}
+
+	/**
+	 * @return array
+	 */
+	public function asArray() {
+		return $this->array;
+	}
+
+	/**
+	 * @param array $array
+	 * @param array $path
+	 * @return bool
+	 */
+	private function _recursiveHas($array, $path) {
 		$count = count($path);
 		if (!$count) {
 			return false;
@@ -276,12 +333,12 @@ class ArrayBasics {
 	}
 
 	/**
-	 * @param array|ArrayAccess $array
-	 * @param string[] $path
+	 * @param array $array
+	 * @param array $path
 	 * @param mixed $default
-	 * @return mixed
+	 * @return array
 	 */
-	public function recursiveGet($array, array $path, $default = null) {
+	private function _recursiveGet($array, $path, $default) {
 		$count = count($path);
 		if (!$count) {
 			return $default;
@@ -297,12 +354,12 @@ class ArrayBasics {
 	}
 
 	/**
-	 * @param array|ArrayAccess $array
-	 * @param string[] $path
+	 * @param array $array
+	 * @param array $path
 	 * @param mixed $value
-	 * @return array
+	 * @return mixed
 	 */
-	public function recursiveSet($array, array $path, $value) {
+	private function _recursiveSet($array, $path, $value) {
 		$key = array_shift($path);
 		if (!array_key_exists($key, $array)) {
 			$data[$key] = array();
@@ -316,14 +373,11 @@ class ArrayBasics {
 	}
 
 	/**
-	 * Run into each level of recursion until the last key was found, or until a key was missing at any level.
-	 * If the last key was found, it gets removed by unset()
-	 *
-	 * @param array|ArrayAccess $array
-	 * @param string[] $path
-	 * @return array
+	 * @param array $array
+	 * @param array $path
+	 * @return mixed
 	 */
-	public function recursiveRemove($array, array $path) {
+	private function _recursiveRemove($array, array $path) {
 		while (count($path)) { // Only try this while a valid path is given
 			$key = array_shift($path); // Get the current key
 			if(array_key_exists($key, $array)) { // If the current key is present in the current recursion-level...

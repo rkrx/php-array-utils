@@ -26,7 +26,7 @@ class DiffRecursiveTest extends PHPUnit_Framework_TestCase {
 			'e' => 4,
 		);
 
-		$diff = arr()->diffAssocRecursive($a, $b);
+		$diff = arr($a)->diffAssocRecursive($b)->asArray();
 
 		$this->assertEquals(array('c' => 3, 'd' => array('c' => 3)), $diff);
 	}
